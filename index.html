@@ -17,7 +17,7 @@
             width: 600px;
             margin: 5em auto;
             padding: 50px;
-            background-color: #fff;
+            background-color: #ffff;
             border-radius: 1em;
         }
         a:link, a:visited {
@@ -40,16 +40,18 @@
 
 <body>
 <div>
-    <h1>Blockchain Demo</h1><br>
+    <h1>GS Progressive Tax Calculator</h1><br>
 
     <span>
-        <p id="message"></p>
-        <button onclick="refreshMessageValue()">Refresh message value</button>
+        <p id="tax"></p>
+        <button onclick="displayTax()">Display Current Tax</button>
+        <p id="frequency"></p>
+        <button onclick="displayFrequency()">Display Frequency</button>
     </span>
     <br><br><hr><br><br>
     <span>
-        <input id="value" type="text" placeholder="enter new message value here" style="width:200px" />
-        <button onclick="updateMessageValue()">Update message value</button>
+        <input id="submit" type="text" placeholder="Enter Transaction in RM" style="width:300px" />
+        <button onclick="submitTransaction()">Submit Transaction</button>
     </span>
 
 </div>
