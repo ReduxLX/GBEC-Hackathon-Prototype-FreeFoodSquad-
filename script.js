@@ -1,6 +1,5 @@
-
 // address of your smart contract deployed on the blockchain
-var smartContractAddress = "0x22f2d68d501c6784f4e8718feca871e91a1304b5";
+var smartContractAddress = "0xfe74a0eae72bf8aa8ed602dcc7e573fdcece1124";
 
 // ABI is a JSON formatted list of contract's function and arguments required to create the EVM bytecode required to call the function
 var abi = [
@@ -8,35 +7,53 @@ var abi = [
 		"constant": false,
 		"inputs": [
 			{
-				"name": "newMessage",
-				"type": "string"
+				"name": "_day",
+				"type": "uint256"
 			}
 		],
-		"name": "setMessage",
+		"name": "setDay",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"constant": true,
-		"inputs": [],
-		"name": "message",
-		"outputs": [
+		"constant": false,
+		"inputs": [
 			{
-				"name": "",
-				"type": "string"
+				"name": "_frequency",
+				"type": "int256"
 			}
 		],
+		"name": "setFrequency",
+		"outputs": [],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_transaction",
+				"type": "uint256"
+			}
+		],
+		"name": "setTransaction",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
 		"inputs": [
 			{
-				"name": "initialMessage",
-				"type": "string"
+				"name": "initialFrequency",
+				"type": "int256"
+			},
+			{
+				"name": "initialTransaction",
+				"type": "uint256"
 			}
 		],
 		"payable": false,
@@ -49,13 +66,120 @@ var abi = [
 			{
 				"indexed": false,
 				"name": "value",
-				"type": "string"
+				"type": "uint256"
 			}
 		],
-		"name": "new_message",
+		"name": "new_transaction",
 		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "value",
+				"type": "int256"
+			}
+		],
+		"name": "new_frequency",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "old_transaction",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "new_day",
+		"type": "event"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "day",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "finalTransaction",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "frequency",
+		"outputs": [
+			{
+				"name": "",
+				"type": "int256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "transaction",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "transactionAfterTax",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
 	}
 ];
+
 
 var myAccount;
 var web3;
@@ -66,22 +190,38 @@ function initApp(){
   contractInstance = myContract.at(smartContractAddress);
 }
 
-function updateMessageValue() {
-  msgString = document.getElementById("value").value;
-  if(!msgString){
-    return window.alert("MESSAGE VALUE IS EMPTY");
+function updateTransactionValue() {
+  transactionAmount = parseFloat(document.getElementById("transaction_value").value);
+  transactionAmount = transactionAmount * 100;
+  if(transactionAmount == 0){
+    return window.alert("No TRANSACTION!");
   }
 
-  contractInstance.setMessage(msgString,{
+  contractInstance.setTransaction(transactionAmount,{ 
     from: myAccount,
     gasPrice: "20000000000", // amount of wei you're paying for every unit of gas
     gas: "41000", //maximum gas to be spent on this transaction
-    //to: textetheraddress,
+    //to: textetheraddress, 
     //value: textetheramount,
     //data: ""
    }, function(err, result) {
     if (!err){
-      console.log('MESSAGE UPDATED IN BLOCKCHIAN SUCCESSFULLY',result);
+      console.log('TRANSACTION UPDATED IN BLOCKCHIAN SUCCESSFULLY',result); 
+    }
+    else{
+      console.log(err);
+    }
+  });
+  updateFrequencyValue();
+}
+
+function refreshTransactionValue(transactionAmount) {
+  contractInstance.transaction({
+    from: myAccount
+   }, function(err, result) {
+    if (!err){
+      console.log('Fetched transaction value from blockchain:',result); 
+      document.getElementById("transaction").innerText=result;
     }
     else{
       console.log(err);
@@ -89,19 +229,93 @@ function updateMessageValue() {
   });
 }
 
-function refreshMessageValue(msgString) {
-  contractInstance.message({
+function updateFrequencyValue() {
+  dayPurchase = contractInstance.day;
+  if (dayPurchase < 31 && dayPurchase >= 0){
+    frequencyPurchase = contractInstance.frequency;
+    frequencyPurchase ++;
+    contractInstance.setFrequency(frequencyPurchase,{ 
+    from: myAccount,
+    gasPrice: "20000000000", // amount of wei you're paying for every unit of gas
+    gas: "41000", //maximum gas to be spent on this transaction
+    //to: textetheraddress, 
+    //value: textetheramount,
+    //data: ""
+   }, function(err, result) {
+    if (!err){
+      console.log('FREQUENCY UPDATED IN BLOCKCHIAN SUCCESSFULLY',result); 
+    }
+    else{
+      console.log(err);
+    }
+  });
+  }
+  else if (dayPurchase > 30){
+    contractInstance.setDay(0,{ 
+    from: myAccount,
+    gasPrice: "20000000000", // amount of wei you're paying for every unit of gas
+    gas: "41000", //maximum gas to be spent on this transaction
+    //to: textetheraddress, 
+    //value: textetheramount,
+    //data: ""
+   }, function(err, result) {
+    if (!err){
+      console.log('FREQUENCY UPDATED IN BLOCKCHIAN SUCCESSFULLY',result); 
+    }
+    else{
+      console.log(err);
+    }
+  });
+  contractInstance.setFrequency(0,{ 
+    from: myAccount,
+    gasPrice: "20000000000", // amount of wei you're paying for every unit of gas
+    gas: "41000", //maximum gas to be spent on this transaction
+    //to: textetheraddress, 
+    //value: textetheramount,
+    //data: ""
+   }, function(err, result) {
+    if (!err){
+      console.log('FREQUENCY UPDATED IN BLOCKCHIAN SUCCESSFULLY',result); 
+    }
+    else{
+      console.log(err);
+    }
+  });
+  }
+}
+
+
+
+function refreshFrequencyValue(frequencyPurchase) {
+  contractInstance.frequency({ 
     from: myAccount
    }, function(err, result) {
     if (!err){
-      console.log('Fetched msg value from blockchain:',result);
-      document.getElementById("message").innerText=result;
+      console.log('Fetched transaction value from blockchain:',result); 
+      document.getElementById("frequency").innerText=result;
     }
     else{
       console.log(err);
     }
   });
 }
+
+function updateTransactionAfterTax(transactionAmount, frequencyAmount){
+  result = contractInstance.transactionAfterTax()
+  contractInstance.finalTransaction({ 
+    from: myAccount
+   }, function(err, result) {
+    if (!err){
+      console.log('Fetched transaction value from blockchain:',result); 
+      document.getElementById("transactionAfterTax").innerText=result/100;
+    }
+    else{
+      console.log(err);
+    }
+  });
+}
+
+
 
 window.addEventListener('load', function() {
 // Checking if Web3 has been injected by the browser (Mist/MetaMask)
@@ -109,8 +323,8 @@ window.addEventListener('load', function() {
     // Use Mist/MetaMask's provider
     web3 = new Web3(web3.currentProvider);
   } else {
-    // Handle the case where the user doesn't have web3. Probably
-    // show them a message telling them to install Metamask in
+    // Handle the case where the user doesn't have web3. Probably 
+    // show them a message telling them to install Metamask in 
     // order to use our app.
     // For example
     // connect to eth node running locally
@@ -122,3 +336,5 @@ window.addEventListener('load', function() {
   // Now you can start your app & access web3js freely:
   initApp();
 })
+
+
