@@ -216,16 +216,18 @@ function initApp(){
   contractInstance = myContract.at(smartContractAddress);
 }
 
-function submitTransaction() {
+function submitICNumberAndHexAddress() {
   //Assign enterredTransaction the value enterred
-  enterredTransaction = parseFloat(document.getElementById("submit").value) *100;
-  enterredAddress = document.getElementById("buyerAddress").value;
-  currentFrequency = contractInstance.frequency;
-  if(!enterredTransaction){
+  enterredICNumber = document.getElementById("icNumber").value;
+  if(!enterredICNumber){
+    return window.alert("MESSAGE VALUE IS EMPTY");
+  }
+  enterredHexAddress = document.getElementById("hexAddress").value;
+  if(!enterredHexAddress){
     return window.alert("MESSAGE VALUE IS EMPTY");
   }
 
-  contractInstance.simulateTransaction(enterredAddress,enterredTransaction,{
+  contractInstance.registerPerson(enterredHexAddress,enterredICNumber,{
     from: myAccount,
     gasPrice: "20000000000", // amount of wei you're paying for every unit of gas
     gas: "400000", //maximum gas to be spent on this transaction
@@ -248,7 +250,7 @@ function displayTax(enterredTransaction) {
    }, function(err, result) {
     if (!err){
       console.log('Fetched calculated tax value from blockchain:',result);
-      document.getElementById("tax").innerText=(result/100);
+      document.getElementById("tax").innerText=result;
     }
     else{
       console.log(err);
@@ -256,19 +258,6 @@ function displayTax(enterredTransaction) {
   });
 }
 
-function displayFrequency(currentFrequency) {
-  contractInstance.frequency({
-    from: myAccount
-   }, function(err, result) {
-    if (!err){
-      console.log('Fetched frequency from blockchain:',result);
-      document.getElementById("frequency").innerText=result;
-    }
-    else{
-      console.log(err);
-    }
-  });
-}
 
 window.addEventListener('load', function() {
   if (typeof web3 !== 'undefined') {

@@ -1,5 +1,7 @@
+// address of your smart contract deployed on the blockchain
 var smartContractAddress = "0x18ab31bf87323512f18243e6e23cb931ff2e63dd";
 
+// ABI is a JSON formatted list of contract's function and arguments required to create the EVM bytecode required to call the function
 var abi = [
 	{
 		"constant": false,
@@ -216,25 +218,23 @@ function initApp(){
   contractInstance = myContract.at(smartContractAddress);
 }
 
-function submitTransaction() {
-  //Assign enterredTransaction the value enterred
-  enterredTransaction = parseFloat(document.getElementById("submit").value) *100;
-  enterredAddress = document.getElementById("buyerAddress").value;
-  currentFrequency = contractInstance.frequency;
-  if(!enterredTransaction){
-    return window.alert("MESSAGE VALUE IS EMPTY");
+//Listens for Submit Button
+function enterICNumber() {
+  ICNumber = document.getElementById("submit").value;
+  if(!ICNumber){
+    return window.alert("IC NUMBER IS EMPTY");
   }
 
-  contractInstance.simulateTransaction(enterredAddress,enterredTransaction,{
+  contractInstance.getTaxTotal(ICNumber,{
     from: myAccount,
     gasPrice: "20000000000", // amount of wei you're paying for every unit of gas
-    gas: "400000", //maximum gas to be spent on this transaction
+    gas: "200000", //maximum gas to be spent on this transaction
     //to: textetheraddress,
     //value: textetheramount,
     //data: ""
    }, function(err, result) {
     if (!err){
-      console.log('MESSAGE UPDATED IN BLOCKCHAIN SUCCESSFULLY',result);
+      console.log('MESSAGE UPDATED IN BLOCKCHIAN SUCCESSFULLY',result);
     }
     else{
       console.log(err);
@@ -242,27 +242,13 @@ function submitTransaction() {
   });
 }
 
-function displayTax(enterredTransaction) {
-  contractInstance.tax({
+function displayTotalTax(ICNumber) {
+  contractInstance.totalTaxDisplay({
     from: myAccount
    }, function(err, result) {
     if (!err){
-      console.log('Fetched calculated tax value from blockchain:',result);
-      document.getElementById("tax").innerText=(result/100);
-    }
-    else{
-      console.log(err);
-    }
-  });
-}
-
-function displayFrequency(currentFrequency) {
-  contractInstance.frequency({
-    from: myAccount
-   }, function(err, result) {
-    if (!err){
-      console.log('Fetched frequency from blockchain:',result);
-      document.getElementById("frequency").innerText=result;
+      console.log('Fetched total tax from blockchain:',result);
+      document.getElementById("totalTax").innerText=(result/100);
     }
     else{
       console.log(err);
