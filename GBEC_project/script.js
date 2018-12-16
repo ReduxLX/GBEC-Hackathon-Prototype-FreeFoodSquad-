@@ -1,4 +1,4 @@
-var smartContractAddress = "0x10509107b7c3945f2aa4158cb65d442f9a6f5760";
+var smartContractAddress = "0x68d5cd736a2a79eb08cc21f6db7435d950035c66";
 
 var abi = [
 	{
@@ -26,7 +26,7 @@ var abi = [
 	{
 		"constant": false,
 		"inputs": [],
-		"name": "advanceTenDays",
+		"name": "addTenFrequency",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -38,17 +38,7 @@ var abi = [
 			{
 				"name": "_buyerAddress",
 				"type": "address"
-			}
-		],
-		"name": "setBuyerAddress",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
+			},
 			{
 				"name": "nextTransaction",
 				"type": "uint256"
@@ -182,38 +172,13 @@ function initApp(){
 function submitTransaction() {
   //Assign enterredTransaction the value enterred
   enterredTransaction = document.getElementById("submit").value;
-  if(!enterredTransaction){
-    return window.alert("MESSAGE VALUE IS EMPTY");
-  }
-
-  contractInstance.simulateTransaction(enterredTransaction,{
-    from: myAccount,
-    gasPrice: "20000000000", // amount of wei you're paying for every unit of gas
-    gas: "400000", //maximum gas to be spent on this transaction
-    //to: textetheraddress,
-    //value: textetheramount,
-    //data: ""
-   }, function(err, result) {
-    if (!err){
-      console.log('MESSAGE UPDATED IN BLOCKCHAIN SUCCESSFULLY',result);
-    }
-    else{
-      console.log(err);
-    }
-  });
-}
-
-function submitAddress() {
-  //Assign enterredTransaction the value enterred
   enterredAddress = document.getElementById("buyerAddress").value;
-
- currentFrequency = contractInstance.frequency
-
+  currentFrequency = contractInstance.frequency;
   if(!enterredTransaction){
     return window.alert("MESSAGE VALUE IS EMPTY");
   }
 
-  contractInstance.setBuyerAddress(enterredAddress,{
+  contractInstance.simulateTransaction(enterredAddress,enterredTransaction,{
     from: myAccount,
     gasPrice: "20000000000", // amount of wei you're paying for every unit of gas
     gas: "400000", //maximum gas to be spent on this transaction
