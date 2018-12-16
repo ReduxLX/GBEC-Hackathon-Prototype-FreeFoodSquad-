@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Government Service</title>
+    <title>Government GSDynamic</title>
     <meta charset="utf-8" />
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -40,14 +40,19 @@
 
 <body>
 <div>
-    <h1>Register</h1><br>
+    <h1>Government GSDynamic Database</h1><br>
+
     <span>
-        <input id="icNumber" type="text" placeholder="Enter IC Number" style="width:300px" />
-        <input id="hexAddress" type="text" placeholder="Enter hexAddress" style="width:300px" />
-        <button onclick="submitICNumberAndHexAddress()">Submit IC Number and Hex Address</button>
+        <p id="totalTax"></p>
+        <button onclick="displayTotalTax()">Display Total Tax</button>
+    </span>
+    <br><br><hr><br><br>
+    <span>
+        <input id="submit" type="text" placeholder="Enter IC Number" style="width:300px" />
+        <button onclick="enterICNumber()">Submit IC Number</button>
     </span>
 
 </div>
 </body>
-<script type="text/javascript" src="script.js"></script>
+<script type="text/javascript" src="govReport.js"></script>
 </html>

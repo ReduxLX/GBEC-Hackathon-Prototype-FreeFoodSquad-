@@ -4,14 +4,35 @@ contract GsDynamic{
     uint public frequency;
     uint public transaction;
     uint public tax;
+    address public buyerAddress;
     uint public dayCounter = 0;
-    event new_message(uint value);
-    constructor(uint initialfrequency,uint intialtransaction) public{
-        frequency = initialfrequency;
+
+    struct Person{
+        uint totalTax;
+        int idCardNumber;
+        uint purchaseNumber;
+    }
+
+    mapping (address => Person) public persons;
+
+    constructor(uint intialtransaction,address initialAddress) public{
         transaction = intialtransaction;
+        buyerAddress = initialAddress;
         calculateTax();
     }
+
+    function registerPerson(address _address,int _idCardNumber) public {
+        persons[_address] = Person(0,_idCardNumber,0);
+    }
+
+    function simulateTransaction(address _buyerAddress, uint nextTransaction) public{
+        transaction = nextTransaction;
+        buyerAddress = _buyerAddress;
+        calculateTax();
+    }
+
     function calculateTax() private{
+        frequency = persons[buyerAddress].purchaseNumber;
         if(dayCounter>31){
             dayCounter = 0;
             frequency = 0;
@@ -25,13 +46,12 @@ contract GsDynamic{
         if(frequency>20){
             tax = transaction/5; //20%
         }
-        emit new_message(tax);
+        persons[buyerAddress].purchaseNumber = frequency;
+        persons[buyerAddress].totalTax += tax;
     }
-    function simulateTransaction(uint nextTransaction) public{
-        transaction = nextTransaction;
-        calculateTax();
-    }
-    function advanceTenDays() public{
-        dayCounter += 10;
+
+    //For Video Demonstration, To get to 11 Frequency
+    function addTenFrequency() public{
+        frequency += 10;
     }
 }

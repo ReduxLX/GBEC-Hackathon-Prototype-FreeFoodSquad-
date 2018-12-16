@@ -1,5 +1,8 @@
+
+// address of your smart contract deployed on the blockchain
 var smartContractAddress = "0x5c3c1540dfcd795b0aca58a496e3c30fe2405b07";
 
+// ABI is a JSON formatted list of contract's function and arguments required to create the EVM bytecode required to call the function
 var abi = [
 	{
 		"constant": false,
@@ -216,27 +219,23 @@ function initApp(){
   contractInstance = myContract.at(smartContractAddress);
 }
 
-function submitICNumberAndHexAddress() {
-  //Assign enterredTransaction the value enterred
-  enterredICNumber = document.getElementById("icNumber").value;
-  if(!enterredICNumber){
-    return window.alert("MESSAGE VALUE IS EMPTY");
-  }
-  enterredHexAddress = document.getElementById("hexAddress").value;
-  if(!enterredHexAddress){
-    return window.alert("MESSAGE VALUE IS EMPTY");
+//Listens for Submit Button
+function enterICNumber() {
+  ICNumber = document.getElementById("submit").value;
+  if(!ICNumber){
+    return window.alert("IC NUMBER IS EMPTY");
   }
 
-  contractInstance.registerPerson(enterredHexAddress,enterredICNumber,{
+  contractInstance.getTaxTotal(ICNumber,{
     from: myAccount,
     gasPrice: "20000000000", // amount of wei you're paying for every unit of gas
-    gas: "400000", //maximum gas to be spent on this transaction
+    gas: "200000", //maximum gas to be spent on this transaction
     //to: textetheraddress,
     //value: textetheramount,
     //data: ""
    }, function(err, result) {
     if (!err){
-      console.log('MESSAGE UPDATED IN BLOCKCHAIN SUCCESSFULLY',result);
+      console.log('MESSAGE UPDATED IN BLOCKCHIAN SUCCESSFULLY',result);
     }
     else{
       console.log(err);
@@ -244,20 +243,19 @@ function submitICNumberAndHexAddress() {
   });
 }
 
-function displayTax(enterredTransaction) {
-  contractInstance.tax({
+function displayTotalTax(ICNumber) {
+  contractInstance.totalTaxDisplay({
     from: myAccount
    }, function(err, result) {
     if (!err){
-      console.log('Fetched calculated tax value from blockchain:',result);
-      document.getElementById("tax").innerText=result;
+      console.log('Fetched total tax from blockchain:',result);
+      document.getElementById("totalTax").innerText=result;
     }
     else{
       console.log(err);
     }
   });
 }
-
 
 window.addEventListener('load', function() {
   if (typeof web3 !== 'undefined') {
