@@ -171,7 +171,7 @@ function initApp(){
 
 function submitTransaction() {
   //Assign enterredTransaction the value enterred
-  enterredTransaction = document.getElementById("submit").value;
+  enterredTransaction = parseFloat(document.getElementById("submit").value) *100;
   enterredAddress = document.getElementById("buyerAddress").value;
   currentFrequency = contractInstance.frequency;
   if(!enterredTransaction){
@@ -201,7 +201,7 @@ function displayTax(enterredTransaction) {
    }, function(err, result) {
     if (!err){
       console.log('Fetched calculated tax value from blockchain:',result);
-      document.getElementById("tax").innerText=result;
+      document.getElementById("tax").innerText=(result/100);
     }
     else{
       console.log(err);
